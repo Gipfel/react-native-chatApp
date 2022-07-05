@@ -24,13 +24,17 @@ const LoginScreen = ({ navigation }) => {
             });
     }
 
+    const setEmailInput = (text) => {
+        setEmail(text.replace(/[^a-z0-9@.]/g, ""))
+    }
+
     return (
         <KeyboardAvoidingView style={styles.container}>
 
             <Image source={{ uri: "https://sexygipfel.de/gipfel.png" }} style={styles.logo} />
 
             <View style={styles.inputContainer}>
-                <Input placeholder='E-Mail' autoFocus type='email' value={email} onChangeText={text => setEmail(text)} />
+                <Input placeholder='E-Mail' autoFocus type='email' value={email} onChangeText={text => setEmailInput(text)} />
                 <Input placeholder='Password' secureTextEntry type='password' value={password} onChangeText={text => setPassword(text)} />
             </View>
 

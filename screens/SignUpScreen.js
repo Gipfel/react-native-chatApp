@@ -34,7 +34,7 @@ const SignUpScreen = ({ navigation }) => {
     }
 
     const changeEmailText = (text) => {
-        setEmail(text.replace(/[^a-zA-Z0-9@.]/g, ""))
+        setEmail(text.replace(/[^a-z0-9@.]/g, ""))
     }
 
     return (
