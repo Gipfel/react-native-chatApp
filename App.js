@@ -1,8 +1,8 @@
-import { StyleSheet} from "react-native";
+import { StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import 'react-native-gesture-handler';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import "react-native-gesture-handler";
 
 import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
@@ -14,15 +14,15 @@ const Stack = createNativeStackNavigator();
 
 const gloabalScreenOptions = {
   headerStyle: {
-    backgroundColor: '#2C6BED'
+    backgroundColor: "#2C6BED",
   },
   headerTitleStyle: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
-  headerTintColor: '#fff',
-  headerTitleAlign: 'center'
-}
+  headerTintColor: "#fff",
+  headerTitleAlign: "center",
+};
 
 export default function App() {
   return (
