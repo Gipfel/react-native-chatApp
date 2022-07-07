@@ -1,13 +1,16 @@
 import { useLayoutEffect, useState } from "react";
 import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import { Button, Input, Text } from 'react-native-elements'
-import { auth, createUserWithEmailAndPassword, updateProfile } from "../firebase";
+import { firebase, auth, createUserWithEmailAndPassword, updateProfile, getStorage, ref, uploadBytesResumable, getDownloadURL } from "../firebase";
+import * as ImagePicker from 'expo-image-picker';
 
 const SignUpScreen = ({ navigation }) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [imgUrl, setImgUrl] = useState("");
+    const [pbImg, setPbImg] = useState("");
+    const [finalImg, setFinalImg] = useState("");
 
     useLayoutEffect(() => {
 
@@ -20,12 +23,12 @@ const SignUpScreen = ({ navigation }) => {
 
     const signUp = () => {
 
-        createUserWithEmailAndPassword(auth, email, password)
+        createUserWithEmailAndPassword(auth, toLowerCase(email), password)
             .then(() => {
 
                 updateProfile(auth.currentUser, {
                     displayName: name,
-                    photoURL: imgUrl || "https://sexygipfel.de/gipfel.png"
+                    photoURL: finalImg || "https://sexygipfel.de/gipfel.png"
                 })
 
             }).catch(err => {
@@ -34,7 +37,62 @@ const SignUpScreen = ({ navigation }) => {
     }
 
     const changeEmailText = (text) => {
-        setEmail(text.replace(/[^a-z0-9@.]/g, ""))
+        setEmail(text.replace(/[^a-zA-Z0-9@.]/g, ""))
+    }
+
+    let openImagePickerAsync = async () => {
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required !");
+            return;
+        }
+
+        let pickerResult = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+        console.log(pickerResult);
+        setPbImg(pickerResult.uri);
+        firebaseImgUpload();
+    }
+
+    const firebaseImgUpload = async () => {
+        const storage = getStorage();
+        const storageRef = ref(storage, new Date().toISOString());
+
+        const uploadTask = uploadBytesResumable(storageRef, pbImg);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // Observe state change events such as progress, pause, and resume
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                console.log('Upload is ' + progress + '% done');
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (error) => {
+                // Handle unsuccessful uploads
+                alert(error);
+            },
+            () => {
+                // Handle successful uploads on complete
+                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+                    setFinalImg(downloadURL);
+                });
+            }
+        );
     }
 
     return (
@@ -71,6 +129,10 @@ const SignUpScreen = ({ navigation }) => {
                     value={imgUrl}
                     onChangeText={text => setImgUrl(text)}
                     onSubmitEditing={() => signUp()}
+                />
+                <Button
+                    title='Upload Profile Picture'
+                    onPress={() => openImagePickerAsync()}
                 />
             </View>
 

@@ -18,14 +18,14 @@ const LoginScreen = ({ navigation }) => {
     }, [])
 
     const signIn = () => {
-        signInWithEmailAndPassword(auth, email, password)
+        signInWithEmailAndPassword(auth, toLowerCase(email), password)
             .catch((err) => {
                 alert(err.message);
             });
     }
 
     const setEmailInput = (text) => {
-        setEmail(text.replace(/[^a-z0-9@.]/g, ""))
+        setEmail(text.replace(/[^a-zA-Z0-9@.]/g, ""))
     }
 
     return (
