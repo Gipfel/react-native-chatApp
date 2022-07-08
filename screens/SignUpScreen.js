@@ -9,19 +9,19 @@ import {
 import {
     getStorage,
     ref,
-    uploadBytes,
     getDownloadURL,
+    uploadBytesResumable,
 } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { uuidv4 } from "@firebase/util";
+import { DefaultTheme, ProgressBar } from 'react-native-paper';
 
 const SignUpScreen = ({ navigation }) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [imgUrl, setImgUrl] = useState("");
     const [pbImg, setPbImg] = useState("");
-    const [finalImg, setFinalImg] = useState("");
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -36,7 +36,7 @@ const SignUpScreen = ({ navigation }) => {
             .then(() => {
                 updateProfile(auth.currentUser, {
                     displayName: name,
-                    photoURL: finalImg || pbImg || imgUrl || "https://sexygipfel.de/gipfel.png",
+                    photoURL: pbImg,
                 });
             })
             .catch((err) => {
@@ -71,12 +71,39 @@ const SignUpScreen = ({ navigation }) => {
             const img = await fetch(pickerResult.uri);
             const blob = await img.blob();
 
-            uploadBytes(imageRef, blob).then(() => {
-                // Uploaded
-            })
+            const uploadTask = uploadBytesResumable(imageRef, blob).on('state_changed',
+                (snapshot) => {
+                    // Observe state change events such as progress, pause, and resume
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+                    console.log('Upload is ' + progress * 100 + '% done');
+                    setUploadProgress(progress);
+                },
+                (error) => {
+                    // Handle unsuccessful uploads
+                },
+                () => {
+                    // Handle successful uploads on complete
+                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                        setPbImg(downloadURL);
+                    });
+                }
+            );
 
         }
     }
+
+    const theme = {
+        ...DefaultTheme,
+        roundness: 2,
+        colors: {
+          ...DefaultTheme.colors,
+          primary: '#000000',
+          accent: '#6d0ff1',
+        },
+      };
 
     return (
         <KeyboardAvoidingView style={styles.container}>
@@ -105,17 +132,12 @@ const SignUpScreen = ({ navigation }) => {
                     value={password}
                     onChangeText={(text) => setPassword(text)}
                 />
-                <Input
-                    placeholder="Profile Picture URL (optional)"
-                    type="text"
-                    value={imgUrl}
-                    onChangeText={(text) => setImgUrl(text)}
-                    onSubmitEditing={() => signUp()}
-                />
                 <Button
                     title="Upload Profile Picture"
                     onPress={() => openImagePickerAsync()}
+                    buttonStyle={{ backgroundColor: "#103f9c" }}
                 />
+                <ProgressBar progress={uploadProgress} theme={theme} />
             </View>
 
             <Button

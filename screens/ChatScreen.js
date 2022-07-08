@@ -6,8 +6,9 @@ import { Keyboard, ScrollView, TextInput } from 'react-native'
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native'
 import { Avatar } from 'react-native-elements'
 import { TouchableWithoutFeedback } from 'react-native-web'
-import firebase from 'firebase/compat/app';
-import { db, auth } from '../firebase'
+import { auth, db } from '../firebase'
+import * as firebase from 'firebase/app'
+import { doc, collection, addDoc, onSnapshot } from "firebase/firestore";
 
 const ChatScreen = ({ navigation, route }) => {
     const [input, setInput] = useState("");
@@ -73,6 +74,7 @@ const ChatScreen = ({ navigation, route }) => {
                     data: doc.data()
                 }))
             ));
+        return onSnapshot(doc())
     }, [route])
 
     return (
