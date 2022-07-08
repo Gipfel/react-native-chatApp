@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import { initializeApp } from "firebase/app";
 import {
   getAuth,
   signOut,
@@ -23,29 +23,15 @@ const firebaseConfig = {
   appId: "1:359593426705:web:a4e5e51a3369cca7ba16b0",
 };
 
-let app;
+const app = initializeApp(firebaseConfig);
 
-if (firebase.apps.length === 0) {
-  app = firebase.initializeApp(firebaseConfig);
-} else {
-  app = firebase.app();
-}
-
-const db = app.firestore();
 const auth = getAuth(app);
 
 export {
-  firebase,
   firebaseConfig,
-  db,
   auth,
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
-  getStorage,
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-  getDownloadURL,
 };
