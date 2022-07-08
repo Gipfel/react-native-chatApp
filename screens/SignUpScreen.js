@@ -34,7 +34,7 @@ const SignUpScreen = ({ navigation }) => {
       .then(() => {
         updateProfile(auth.currentUser, {
           displayName: name,
-          photoURL: finalImg || "https://sexygipfel.de/gipfel.png",
+          photoURL: finalImg || pbImg || imgUrl || "https://sexygipfel.de/gipfel.png",
         });
       })
       .catch((err) => {
