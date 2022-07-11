@@ -8,7 +8,7 @@ import { Avatar } from 'react-native-elements'
 import { TouchableWithoutFeedback } from 'react-native-web'
 import { auth, db } from '../firebase'
 import * as firebase from 'firebase/app'
-import { doc, collection, addDoc, onSnapshot } from "firebase/firestore";
+import { doc, collection, addDoc, onSnapshot, getDoc, serverTimestamp, getDocs, orderBy, query, QuerySnapshot } from "firebase/firestore";
 
 const ChatScreen = ({ navigation, route }) => {
     const [input, setInput] = useState("");
@@ -48,33 +48,53 @@ const ChatScreen = ({ navigation, route }) => {
     const sendMessage = () => {
         // Check if input is empty or only contains whitespace
         if (input.trim() === "") return;
-    
+
         Keyboard.dismiss();
 
-        db.collection('chats').doc(route.params.id).collection('messages').add({
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        // db.collection('chats').doc(route.params.id).collection('messages').add({
+        //     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        //     message: input,
+        //     displayName: auth.currentUser.displayName,
+        //     email: auth.currentUser.email,
+        //     photoURL: auth.currentUser.photoURL,
+        // })
+
+        addDoc(collection(db, "chats", route.params.id, "messages"), {
+            timestamp: serverTimestamp(),
             message: input,
             displayName: auth.currentUser.displayName,
             email: auth.currentUser.email,
             photoURL: auth.currentUser.photoURL,
-        })
+        });
 
         setInput('');
     }
 
     useLayoutEffect(() => {
-        return db
-            .collection('chats')
-            .doc(route.params.id)
-            .collection('messages')
-            .orderBy('timestamp', 'asc')
-            .onSnapshot(snapshot => setMessages(
-                snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    data: doc.data()
+        // return db
+        //     .collection('chats')
+        //     .doc(route.params.id)
+        //     .collection('messages')
+        //     .orderBy('timestamp', 'asc')
+        //     .onSnapshot(snapshot => setMessages(
+        //         snapshot.docs.map(doc => ({
+        //             id: doc.id,
+        //             data: doc.data()
+        //         }))
+        //     ));
+
+        return onSnapshot(
+            query(
+                collection(db, "chats", route.params.id, "messages"),
+                orderBy("timestamp", "asc")
+            ),
+            (queriedSnap) => setMessages(
+                queriedSnap.docs.map(qDoc => ({
+                    id: qDoc.id,
+                    data: qDoc.data()
                 }))
-            ));
-        return onSnapshot(doc())
+            )
+        );
     }, [route])
 
     return (

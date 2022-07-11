@@ -1,3 +1,4 @@
+import { addDoc, collection } from 'firebase/firestore';
 import { useLayoutEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Button, Input } from 'react-native-elements'
@@ -9,7 +10,8 @@ const AddChatScreen = ({ navigation }) => {
     const [input, setInput] = useState("");
 
     const createChat = async () => {
-        await db.collection('chats').add({
+
+        await addDoc(collection(db, 'chats'), {
             chatName: input,
         }).then(() => {
             navigation.goBack();

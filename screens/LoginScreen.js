@@ -18,7 +18,7 @@ const LoginScreen = ({ navigation }) => {
   }, []);
 
   const signIn = () => {
-    signInWithEmailAndPassword(auth, toLowerCase(email), password).catch(
+    signInWithEmailAndPassword(auth, email.toLowerCase(), password).catch(
       (err) => {
         alert(err.message);
       }

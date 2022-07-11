@@ -4,17 +4,18 @@ import { Avatar } from "react-native-elements";
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons"
 import CustomListItem from "../components/CustomListItem";
 import { auth, db, signOut } from "../firebase";
+import { collection, doc, onSnapshot, orderBy, query, QuerySnapshot } from "firebase/firestore";
 
 const HomeScreen = ({ navigation }) => {
     const [chats, setChats] = useState([]);
 
     useEffect(() => {
-        return db.collection('chats').onSnapshot(snapshot => {
+        return onSnapshot(collection(db, "chats"), (snapshot) => {
             setChats(snapshot.docs.map(doc => ({
                 id: doc.id,
                 data: doc.data(),
             })))
-        })
+        });
     }, [])
 
     const signOutUser = () => {
