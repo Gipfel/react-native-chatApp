@@ -107,30 +107,30 @@ const ChatScreen = ({ navigation, route }) => {
                   <View key={id} style={styles.sender}>
                     <Avatar
                                             // Web
-                        containerStyle={{
-                            position: 'absolute',
-                            right: -8,
-                            bottom: -10
-                          }}
-                        position='absolute' rounded size={30} right={-8} bottom={-10} source={{
-                            uri: data.photoURL
-                          }}
-                      />
+                      containerStyle={{
+                        position: 'absolute',
+                        right: -8,
+                        bottom: -10
+                      }}
+                      position='absolute' rounded size={30} right={-8} bottom={-10} source={{
+                        uri: data.photoURL
+                      }}
+                    />
                     <Text style={styles.senderText}>{data.message}</Text>
                   </View>
                 ) : (
                   <View key={id} style={styles.reciever}>
                     <Avatar
                                             // Web
-                        containerStyle={{
-                            position: 'absolute',
-                            left: -8,
-                            bottom: -10
-                          }}
-                        position='absolute' rounded size={30} left={-8} bottom={-10} source={{
-                            uri: data.photoURL
-                          }}
-                      />
+                      containerStyle={{
+                        position: 'absolute',
+                        left: -8,
+                        bottom: -10
+                      }}
+                      position='absolute' rounded size={30} left={-8} bottom={-10} source={{
+                        uri: data.photoURL
+                      }}
+                    />
                     <Text style={styles.recieverText}>{data.message}</Text>
                     <Text style={styles.recieverName}>{data.displayName}</Text>
                   </View>
